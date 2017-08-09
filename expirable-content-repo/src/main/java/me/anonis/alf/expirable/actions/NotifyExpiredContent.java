@@ -68,7 +68,7 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
     private ServiceRegistry serviceRegistry;
     private SearchService searchService;
     private NodeService nodeService;
-    private PersonService personService = serviceRegistry.getPersonService();
+    private PersonService personService;
     private ReportWriter reportWriter;
 
     protected JavaMailSender mailService;
@@ -193,6 +193,10 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
     protected void addParameterDefinitions(List<ParameterDefinition> paramList) {
         paramList.add(new ParameterDefinitionImpl(PARAM_FROM, DataTypeDefinition.TEXT, true, PARAM_FROM));
         paramList.add(new ParameterDefinitionImpl(PARAM_CONVERT, DataTypeDefinition.BOOLEAN, true, PARAM_CONVERT));
+    }
+
+    public void setPersonService(PersonService personService) {
+       this.personService = personService;
     }
 
     public ResultSet getExpiredContent() {
