@@ -140,8 +140,16 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
 
                 try {
                     String ownerUsername = (String) nodeService.getProperty(expiredDoc, ContentModel.PROP_OWNER);
-                    NodeRef owner = personService.getPerson(ownerUsername);
-                    ownerEmail = (String) nodeService.getProperty(expiredDoc, ContentModel.PROP_EMAIL);
+                    if (ownerUsername == null) {
+                        LOG.warn("Cannot get owner (ownerUsername == null) of "+nodeRefStr);
+                        continue;
+                    }
+                    NodeRef owner = personService.getPersonOrNull(ownerUsername);
+                    if (owner == null) {
+                        LOG.warn("Cannot get owner (owner == null) of "+nodeRefStr);
+                        continue;
+                    }
+                    ownerEmail = (String) nodeService.getProperty(owner, ContentModel.PROP_EMAIL);
                 } catch(InvalidNodeRefException ex) {
                     LOG.warn("Cannot get email of owner of "+nodeRefStr);
                     continue;
