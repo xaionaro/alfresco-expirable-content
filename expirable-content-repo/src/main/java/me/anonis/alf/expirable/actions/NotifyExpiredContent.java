@@ -30,7 +30,6 @@ import org.alfresco.repo.action.executer.ActionExecuterAbstractBase;
 import org.alfresco.repo.action.ParameterDefinitionImpl;
 import org.alfresco.repo.content.transform.ContentTransformer;
 import org.alfresco.repo.content.MimetypeMap;
-import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ParameterDefinition;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
@@ -65,7 +64,6 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
     public static final String PARAM_ATTACHMENT = "attachments";
 
     private ContentService contentService;
-    private ServiceRegistry serviceRegistry;
     private SearchService searchService;
     private NodeService nodeService;
     private PersonService personService;
@@ -78,7 +76,7 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
 
         MappedByteBuffer buf;
         byte[] array = new byte[0];
-        ContentReader reader = serviceRegistry.getContentService().getReader(nodeRef, ContentModel.PROP_CONTENT);
+        ContentReader reader = contentService.getReader(nodeRef, ContentModel.PROP_CONTENT);
         String fileName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
         String type = reader.getMimetype().split("/")[0];
         if (!type.equalsIgnoreCase("image")
@@ -97,7 +95,7 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
                 } catch (ContentIOException ex) {
                     LOG.warn("could not transform content");
                     //LOG.warn(ex);
-                    reader = serviceRegistry.getContentService().getReader(nodeRef, ContentModel.PROP_CONTENT);
+                    reader = contentService.getReader(nodeRef, ContentModel.PROP_CONTENT);
                 }
             }
         }
@@ -123,6 +121,7 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
 
     @Override
     public void executeImpl(Action ruleAction, NodeRef actionedUponNodeRef) {
+        LOG.warn("executeImpl");
         List<ReportData> reportDataList = new ArrayList<ReportData>();
         ResultSet expiredDocs = getExpiredContent();
         for (int i = 0; i < expiredDocs.length(); i++) {
@@ -135,6 +134,8 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
                 reportData.setNodeRef(nodeRefStr);
                 reportData.setExpirationDate((Date) nodeService.getProperty(expiredDoc, ExpirableContentModel.PROP_EXPIRATION_DATE));
                 reportData.setPath(nodeService.getPath(expiredDoc).toString());
+
+                reportDataList.add(reportData);
 
                 String ownerEmail;
 
@@ -155,6 +156,8 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
                     continue;
                 }
 
+                LOG.warn("ownerEmail: "+ ownerEmail);
+
                 try {
                     //nodeService.notifyNode(expiredDoc);
                     MimeMessage mimeMessage = mailService.createMimeMessage();
@@ -164,7 +167,7 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
 
                     MimeMultipart mail = new MimeMultipart("mixed");
                     MimeBodyPart bodyText = new MimeBodyPart();
-                    bodyText.setText("test1");
+                    bodyText.setText("Document expired");
                     addAttachement(expiredDoc, mail, false);
                     mimeMessage.setContent(mail);
                 } catch (InvalidNodeRefException inre) {
@@ -177,8 +180,6 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
                     LOG.warn("javax.mail.MessagingException, " + nodeRefStr);
                     continue;
                 }
-
-                reportDataList.add(reportData);
             }
         }
         if (reportDataList.size() > 0) {
@@ -195,13 +196,21 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
         paramList.add(new ParameterDefinitionImpl(PARAM_CONVERT, DataTypeDefinition.BOOLEAN, true, PARAM_CONVERT));
     }
 
+    public ResultSet getExpiredContent() {
+        String query = "ASPECT:\"cxme:expirable\" AND cxme:expirationDate:[MIN to \"" + Instant.now().toString() + "\"]";
+        return searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, query);
+    }
+
     public void setPersonService(PersonService personService) {
        this.personService = personService;
     }
 
-    public ResultSet getExpiredContent() {
-        String query = "ASPECT:\"cxme:expirable\" AND cxme:expirationDate:[MIN to \"" + Instant.now().toString() + "\"]";
-        return searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, query);
+    public void setMailService(JavaMailSender mailService) {
+        this.mailService = mailService;
+    }
+
+    public void setContentService(ContentService contentService) {
+        this.contentService = contentService;
     }
 
     public void setNodeService(NodeService nodeService) {

@@ -40,6 +40,15 @@
         <property name="searchService">
             <ref bean="SearchService" />
         </property>
+        <property name="personService">
+            <ref bean="PersonService" />
+        </property>
+        <property name="contentService">
+            <ref bean="ContentService" />
+        </property>
+        <property name="mailService">
+            <ref bean="mailService" />
+        </property>
         <property name="reportWriter">
             <ref bean="expired-content-report-writer" />
         </property>
