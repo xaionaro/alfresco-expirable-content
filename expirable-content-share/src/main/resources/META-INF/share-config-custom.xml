@@ -7,12 +7,28 @@
                     <show id="cxme:expirationDate" for-mode="view" />
                 </field-visibility>
                 <appearance>
-                    <field id="cxme:expirationDate" label-id="prop.cxme_expirationDate" read-only="true">
+                    <field id="cxme:expirationDate" label-id="prop.cxme_expirationDate">
                         <control template="/org/alfresco/components/form/controls/date.ftl" />
                     </field>
                 </appearance>
             </form>
         </forms>
+    </config>
+
+    <config evaluator="string-compare" condition="DocumentLibrary">
+        <aspects>
+            <visible>
+                <aspect name="cxme:expirable" />
+            </visible>
+        </aspects>
+
+        <!-- Aspects that a user can add. Same as "visible" if left empty -->
+        <addable>
+        </addable>
+
+        <!-- Aspects that a user can remove. Same as "visible" if left empty -->
+        <removeable>
+        </removeable>
     </config>
 
 </alfresco-config>

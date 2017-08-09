@@ -19,6 +19,9 @@
         <properties>
           <property name="cxme:expirationDate">
             <type>d:date</type>
+            <index enabled="true">
+                <tokenised>TRUE</tokenised>
+            </index>
           </property>
         </properties>
       </aspect>

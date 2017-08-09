@@ -1,6 +1,6 @@
 # Alfresco Expirable Content
 
-It a very ugly-hacky fork of [https://github.com/Conexiam/alfresco-expirable-content](https://github.com/Conexiam/alfresco-expirable-content), but notifing about expired documents (instead of deleting them)
+It's a very ugly-hacky fork of [https://github.com/Conexiam/alfresco-expirable-content](https://github.com/Conexiam/alfresco-expirable-content), but notifing about expired documents (instead of deleting them)
 
 This add-on gives you the ability to add an expiration date to content. When the expiration date is in the past, the content is notified about.
 
