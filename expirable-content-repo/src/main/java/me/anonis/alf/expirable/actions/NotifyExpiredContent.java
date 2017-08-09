@@ -68,7 +68,7 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
     private ServiceRegistry serviceRegistry;
     private SearchService searchService;
     private NodeService nodeService;
-    private PersonService personService;
+    private PersonService personService = serviceRegistry.getPersonService();
     private ReportWriter reportWriter;
 
     protected JavaMailSender mailService;
