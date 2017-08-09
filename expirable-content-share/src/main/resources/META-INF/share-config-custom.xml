@@ -2,9 +2,9 @@
 
     <config evaluator="aspect" condition="cxme:expirable">
         <forms>
-  	        <form>
-  	            <field-visibility>
-                    <show id="cxme:expirationDate" for-mode="view" />
+            <form>
+                <field-visibility>
+                    <show id="cxme:expirationDate" />
                 </field-visibility>
                 <appearance>
                     <field id="cxme:expirationDate" label-id="prop.cxme_expirationDate">
