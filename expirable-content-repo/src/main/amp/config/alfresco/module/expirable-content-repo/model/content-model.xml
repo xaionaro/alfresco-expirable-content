@@ -2,7 +2,7 @@
 <model name="cxme:expirableContentModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
 
     <description>Expirable Content</description>
-    <author>Metaversant Group, Inc., Jeff Potts</author>
+    <author>Metaversant Group, Inc., Jeff Potts, Dmitry Yu Okunev</author>
     <version>1.0</version>
 
     <imports>
@@ -10,7 +10,7 @@
     </imports>
 
     <namespaces>
-        <namespace uri="http://www.conexiam.com/model/expirable/1.0" prefix="cxme"/>
+        <namespace uri="https://alf.anonis.me/model/expirable/1.0" prefix="cxme"/>
     </namespaces>
 
     <aspects>
@@ -18,7 +18,7 @@
         <title>Expirable Content</title>
         <properties>
           <property name="cxme:expirationDate">
-            <type>d:datetime</type>
+            <type>d:date</type>
           </property>
         </properties>
       </aspect>

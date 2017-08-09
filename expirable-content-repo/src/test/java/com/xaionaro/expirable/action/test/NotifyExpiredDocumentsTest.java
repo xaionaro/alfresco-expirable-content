@@ -1,4 +1,4 @@
-package com.conexiam.expirable.action.test;
+package me.anonis.alf.expirable.action.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -6,10 +6,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.Serializable;
 import java.util.*;
 
-import com.conexiam.expirable.beans.ExpiredContentReportWriter;
-import com.conexiam.expirable.beans.ReportData;
-import com.conexiam.expirable.beans.ReportWriter;
-import com.conexiam.expirable.model.ExpirableContentModel;
+import me.anonis.alf.expirable.beans.ExpiredContentReportWriter;
+import me.anonis.alf.expirable.beans.ReportData;
+import me.anonis.alf.expirable.beans.ReportWriter;
+import me.anonis.alf.expirable.model.ExpirableContentModel;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.action.Action;
@@ -37,11 +37,11 @@ import com.tradeshift.test.remote.RemoteTestRunner;
 @RunWith(RemoteTestRunner.class)
 @Remote(runnerClass=SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:alfresco/application-context.xml")
-public class DeleteExpiredDocumentsTest {
+public class NotifyExpiredDocumentsTest {
 
     private static final String ADMIN_USER_NAME = "admin";
 
-    static Logger logger = Logger.getLogger(DeleteExpiredDocumentsTest.class);
+    static Logger logger = Logger.getLogger(NotifyExpiredDocumentsTest.class);
 
     @Autowired
     @Qualifier("NodeService")
@@ -60,7 +60,7 @@ public class DeleteExpiredDocumentsTest {
     protected ReportWriter reportWriter;
 
     @Test
-    public void testDeleteDocs() {
+    public void testNotifyDocs() {
         AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
 
         String query = "+PATH:\"/app:company_home/app:dictionary/app:expirable_content_reports\"";
@@ -89,13 +89,13 @@ public class DeleteExpiredDocumentsTest {
         List<ChildAssociationRef> children = nodeService.getChildAssocs(testFolder);
         assertEquals(3, children.size());
 
-        Action deleteExpiredAction = actionService.createAction("delete-expired-content");
-        actionService.executeAction(deleteExpiredAction, null);
+        Action notifyExpiredAction = actionService.createAction("notify-expired-content");
+        actionService.executeAction(notifyExpiredAction, null);
 
         children = nodeService.getChildAssocs(testFolder);
         assertEquals(1, children.size());
 
-        nodeService.deleteNode(testFolder);
+        //nodeService.notifyNode(testFolder);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class DeleteExpiredDocumentsTest {
         assertNotNull(report);
         assertTrue(nodeService.exists(report));
 
-        nodeService.deleteNode(report);
+        //nodeService.notifyNode(report);
     }
 
     private void createTestDoc(NodeRef testFolder, String testDocName, Date expirationDate) {

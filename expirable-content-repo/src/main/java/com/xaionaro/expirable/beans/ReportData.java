@@ -1,4 +1,4 @@
-package com.conexiam.expirable.beans;
+package me.anonis.alf.expirable.beans;
 
 import java.util.Date;
 

@@ -18,7 +18,7 @@
 -->
 <beans>
 
-    <bean id="expired-content-report-writer" class="com.conexiam.expirable.beans.ExpiredContentReportWriter">
+    <bean id="expired-content-report-writer" class="me.anonis.alf.expirable.beans.ExpiredContentReportWriter">
         <property name="nodeService">
             <ref bean="NodeService" />
         </property>
@@ -33,7 +33,7 @@
         </property>
     </bean>
 
-    <bean id="delete-expired-content" class="com.conexiam.expirable.actions.DeleteExpiredContent" parent="action-executer">
+    <bean id="notify-expired-content" class="me.anonis.alf.expirable.actions.NotifyExpiredContent" parent="action-executer">
         <property name="nodeService">
             <ref bean="NodeService" />
         </property>
@@ -45,21 +45,21 @@
         </property>
     </bean>
 
-    <bean id="com.conexiam.expirable.jobs.DeleteExpiredContentScheduledJobExecuter"
-          class="com.conexiam.expirable.jobs.DeleteExpiredContentScheduledJobExecuter">
+    <bean id="me.anonis.alf.expirable.jobs.NotifyExpiredContentScheduledJobExecuter"
+          class="me.anonis.alf.expirable.jobs.NotifyExpiredContentScheduledJobExecuter">
         <property name="serviceRegistry">
             <ref bean="ServiceRegistry" />
         </property>
     </bean>
 
-    <bean id="com.conexiam.expirable.jobs.deleteExpiredContent.jobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+    <bean id="me.anonis.alf.expirable.jobs.notifyExpiredContent.jobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
         <property name="jobClass">
-            <value>com.conexiam.expirable.jobs.DeleteExpiredContentScheduledJob</value>
+            <value>me.anonis.alf.expirable.jobs.NotifyExpiredContentScheduledJob</value>
         </property>
         <property name="jobDataAsMap">
             <map>
                 <entry key="jobExecuter">
-                    <ref bean="com.conexiam.expirable.jobs.DeleteExpiredContentScheduledJobExecuter" />
+                    <ref bean="me.anonis.alf.expirable.jobs.NotifyExpiredContentScheduledJobExecuter" />
                 </entry>
                 <entry key="jobLockService">
                     <ref bean="jobLockService" />
@@ -68,22 +68,22 @@
         </property>
     </bean>
 
-    <bean id="com.conexiam.expirable.jobs.deleteExpiredContent.trigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+    <bean id="me.anonis.alf.expirable.jobs.notifyExpiredContent.trigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
         <property name="jobDetail">
-            <ref bean="com.conexiam.expirable.jobs.deleteExpiredContent.jobDetail" />
+            <ref bean="me.anonis.alf.expirable.jobs.notifyExpiredContent.jobDetail" />
         </property>
         <property name="cronExpression">
-            <value>${com.conexiam.expirable.jobs.deleteExpiredContent.cronexpression}</value>
+            <value>${me.anonis.alf.expirable.jobs.notifyExpiredContent.cronexpression}</value>
         </property>
         <property name="startDelay">
-            <value>${com.conexiam.expirable.jobs.deleteExpiredContent.cronstartdelay}</value>
+            <value>${me.anonis.alf.expirable.jobs.notifyExpiredContent.cronstartdelay}</value>
         </property>
     </bean>
 
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <ref bean="com.conexiam.expirable.jobs.deleteExpiredContent.trigger"/>
+                <ref bean="me.anonis.alf.expirable.jobs.notifyExpiredContent.trigger"/>
             </list>
         </property>
     </bean>
