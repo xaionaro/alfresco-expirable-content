@@ -177,10 +177,6 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
     @Override
     protected void addParameterDefinitions(List<ParameterDefinition> paramList) {
         paramList.add(new ParameterDefinitionImpl(PARAM_FROM, DataTypeDefinition.TEXT, true, PARAM_FROM));
-        paramList.add(new ParameterDefinitionImpl(PARAM_TO, DataTypeDefinition.TEXT, true, PARAM_TO));
-        paramList.add(new ParameterDefinitionImpl(PARAM_BCC, DataTypeDefinition.TEXT, true, PARAM_BCC));
-        paramList.add(new ParameterDefinitionImpl(PARAM_SUBJECT, DataTypeDefinition.TEXT, true, PARAM_SUBJECT));
-        paramList.add(new ParameterDefinitionImpl(PARAM_BODY, DataTypeDefinition.TEXT, true, PARAM_BODY));
         paramList.add(new ParameterDefinitionImpl(PARAM_CONVERT, DataTypeDefinition.BOOLEAN, true, PARAM_CONVERT));
     }
 
