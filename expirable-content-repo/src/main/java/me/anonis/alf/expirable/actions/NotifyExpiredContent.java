@@ -121,18 +121,28 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
 
     @Override
     public void executeImpl(Action ruleAction, NodeRef actionedUponNodeRef) {
-        LOG.warn("executeImpl");
         List<ReportData> reportDataList = new ArrayList<ReportData>();
         ResultSet expiredDocs = getExpiredContent();
+        Date now = new Date();
         for (int i = 0; i < expiredDocs.length(); i++) {
             NodeRef expiredDoc = expiredDocs.getNodeRef(i);
 
             if (nodeService.exists(expiredDoc)) {
+                Date lastNotificationDate = (Date) nodeService.getProperty(expiredDoc, ExpirableContentModel.PROP_LAST_NOTIFICATION_DATE);
+                String nodeRefStr = expiredDoc.toString();
+
+                if (lastNotificationDate != null) {
+                    if (lastNotificationDate.getTime() + (7*24*3600) > now.getTime()) {
+                        LOG.info("Already notified. Skipping: "+nodeRefStr);
+                        continue;
+                    }
+                }
+
+                Date expirationDate = (Date) nodeService.getProperty(expiredDoc, ExpirableContentModel.PROP_EXPIRATION_DATE);
                 ReportData reportData = new ReportData();
                 reportData.setName((String) nodeService.getProperty(expiredDoc, ContentModel.PROP_NAME));
-                String nodeRefStr = expiredDoc.toString();
                 reportData.setNodeRef(nodeRefStr);
-                reportData.setExpirationDate((Date) nodeService.getProperty(expiredDoc, ExpirableContentModel.PROP_EXPIRATION_DATE));
+                reportData.setExpirationDate(expirationDate);
                 reportData.setPath(nodeService.getPath(expiredDoc).toString());
 
                 reportDataList.add(reportData);
@@ -156,20 +166,20 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
                     continue;
                 }
 
-                LOG.warn("ownerEmail: "+ ownerEmail);
-
                 try {
                     //nodeService.notifyNode(expiredDoc);
                     MimeMessage mimeMessage = mailService.createMimeMessage();
                     mimeMessage.setFrom(new InternetAddress((String) ruleAction.getParameterValue(PARAM_FROM)));
                     mimeMessage.setRecipients(Message.RecipientType.TO, ownerEmail);
-                    mimeMessage.setSubject((String) nodeService.getProperty(expiredDoc, ContentModel.PROP_NAME));
+                    mimeMessage.setSubject("An expired document: " + ((String) nodeService.getProperty(expiredDoc, ContentModel.PROP_NAME)));
 
                     MimeMultipart mail = new MimeMultipart("mixed");
                     MimeBodyPart bodyText = new MimeBodyPart();
-                    bodyText.setText("Document expired");
+                    bodyText.setText("A document expired: " + nodeRefStr);
+                    mail.addBodyPart(bodyText);
                     addAttachement(expiredDoc, mail, false);
                     mimeMessage.setContent(mail);
+                    mailService.send(mimeMessage);
                 } catch (InvalidNodeRefException inre) {
                     LOG.warn("Tried to notify an invalid node, skipping: " + nodeRefStr);
                     continue;
@@ -180,6 +190,7 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
                     LOG.warn("javax.mail.MessagingException, " + nodeRefStr);
                     continue;
                 }
+                nodeService.setProperty(expiredDoc, ExpirableContentModel.PROP_LAST_NOTIFICATION_DATE, new Date(now.getTime() + (7*24*3600)));
             }
         }
         if (reportDataList.size() > 0) {
@@ -197,7 +208,8 @@ public class NotifyExpiredContent extends ActionExecuterAbstractBase {
     }
 
     public ResultSet getExpiredContent() {
-        String query = "ASPECT:\"cxme:expirable\" AND cxme:expirationDate:[MIN to \"" + Instant.now().toString() + "\"]";
+        String query = "ASPECT:\"cxme:expirable\" AND cxme:expirationDate:[MIN to NOW]";
+        //LOG.info("query == " + query);
         return searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, query);
     }
 

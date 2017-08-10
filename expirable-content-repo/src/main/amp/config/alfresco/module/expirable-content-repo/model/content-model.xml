@@ -23,6 +23,9 @@
                 <tokenised>TRUE</tokenised>
             </index>
           </property>
+          <property name="cxme:lastNotificationDate">
+            <type>d:date</type>
+          </property>
         </properties>
       </aspect>
     </aspects>

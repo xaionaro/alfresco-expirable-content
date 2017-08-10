@@ -5,9 +5,13 @@
             <form>
                 <field-visibility>
                     <show id="cxme:expirationDate" />
+                    <show id="cxme:lastNotificationDate" for-mode="view" />
                 </field-visibility>
                 <appearance>
                     <field id="cxme:expirationDate" label-id="prop.cxme_expirationDate">
+                        <control template="/org/alfresco/components/form/controls/date.ftl" />
+                    </field>
+                    <field id="cxme:lastNotificationDate" label-id="prop.cxme_lastNotificationDate">
                         <control template="/org/alfresco/components/form/controls/date.ftl" />
                     </field>
                 </appearance>
