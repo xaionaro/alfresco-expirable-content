@@ -4,11 +4,6 @@ It's a very ugly-hacky fork of [https://github.com/Conexiam/alfresco-expirable-c
 
 This add-on gives you the ability to add an expiration date to content. When the expiration date is in the past, the content is notified about.
 
-The expiration date is displayed but is not editable in the Share UI. That's because
-this property is intended to be set by a workflow, folder rule, script or some other
-API. If you let anyone edit that property, someone who ordinarily might not be able
-to notify about a document could notify something simply by adjusting the expiration date.
-
 The add-on comes with a scheduled job that will run periodically to notify expired
 content. By default, the job runs every 5 minutes. To change that, set the following
 in alfresco-global.properties:
